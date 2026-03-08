@@ -27,6 +27,30 @@ on:
       feature_set:
         required: true
         type: string
+      add_bypass:
+        required: false
+        type: boolean
+        default: false
+      add_zeromount:
+        required: false
+        type: boolean
+        default: false
+      add_nomount:
+        required: false
+        type: boolean
+        default: false
+      add_nomountX:
+        required: false
+        type: boolean
+        default: false
+      add_hymofs:
+        required: false
+        type: boolean
+        default: false
+      skip_proper:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-gki:
@@ -204,6 +228,143 @@ jobs:
         os_patch_level: ${{ steps.parse.outputs.os_patch_level }}
         sublevel: ${{ steps.extract.outputs.sublevel }}
 
+    - name: Check if BBG
+      if: contains(inputs.feature_set, 'BBG')
+      run: echo "WITH_BBG=y" >> $GITHUB_ENV
+    - name: Check if SUSFS
+      if: contains(inputs.feature_set, 'SUSFS')
+      run: echo "WITH_SUSFS=y" >> $GITHUB_ENV
+    - name: Apply ZeroMount Patch
+      if: inputs.add_zeromount && contains(inputs.feature_set, 'SUSFS')
+      working-directory: ${{ github.workspace }}/kernel/common
+      run: |
+        BRANCH="feature/patch-restructure" # main
+        #echo "==> Apply Upstream SUSFS Patch"
+        #PATCHNAME=50_add_susfs_in_gki-$ANDROID_VERSION-$KERNEL_VERSION.patch
+        #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
+        #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
+        #echo "==> Apply Enhanced SUSFS Patch"
+        #PATCHNAME=51_enhanced_susfs-$ANDROID_VERSION-$KERNEL_VERSION.patch
+        #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
+        #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"        
+        #echo "==> Apply KSU Safety Patch..."
+        #cd ../Wild_KSU
+        #PATCHNAME=70_ksu_safety-wksu-$KERNEL_VERSION.patch
+        #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
+        #[ -s "$PATCHNAME" ] && patch -p1 --no-backup-if-mismatch < "$PATCHNAME" || echo "No 70_ patch needed"
+        #cd ../common
+
+        PATCHNAME=60_zeromount-$ANDROID_VERSION-$KERNEL_VERSION.patch        
+        curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
+        patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
+    - name: NoMount
+      if: inputs.add_nomount || inputs.add_nomountX
+      #working-directory: ${{ env.KERNEL_ROOT }}/common
+      working-directory: ${{ github.workspace }}/kernel/common
+      run: |
+        echo ""
+        echo "=== NoMount patch ==="
+        ###########cd "$KERNEL_ROOT/common" # cd "$CONFIG/common"
+        if [ "${{ env.WITH_SUSFS }}" == "" ]; then
+          NOMOUNT_PATCH="nomount-kernel-${{ inputs.kernel_version }}.patch"
+          echo "  no susfs: $NOMOUNT_PATCH"
+        else            
+          NOMOUNT_PATCH="nomount-susfs-kernel-${{ inputs.kernel_version }}.patch"
+          echo "  with susfs: $NOMOUNT_PATCH"
+        fi
+        if [ "${{ inputs.add_nomountX }}" == "true" ]; then
+          IS_X="X"
+          echo "  <> saved/old patch"
+          cp "$GITHUB_WORKSPACE/patches/nomount/$NOMOUNT_PATCH" nomount.patch
+        else
+          IS_X=""
+          if [ "${{ env.WITH_SUSFS }}" == "" ]; then
+            MASTER_EXP="master" # master experimental
+            echo "  <> LIVE/latest patch ($MASTER_EXP)"
+            curl -LSs "https://raw.githubusercontent.com/maxsteeel/nomount/refs/heads/$MASTER_EXP/patches/$NOMOUNT_PATCH" -o nomount.patch
+          else
+            echo "  <> LIVE/latest patch (WITH EDITS by UserXP...)"
+            cp "$GITHUB_WORKSPACE/patches/nomount/edit/$NOMOUNT_PATCH" nomount.patch
+          fi
+        fi
+        chmod 777 nomount.patch
+        echo "Applying..."
+        patch -p1 --fuzz=10 < nomount.patch # > patch_nomount_log.txt 2>&1          
+        #NOMOUNT_PATCH_EXIT_CODE=$?
+        echo "=== END NoMount patch ==="
+        #if [ $NOMOUNT_PATCH_EXIT_CODE -ne 0 ]; then
+        #  echo "ERROR nomount patch: $NOMOUNT_PATCH_EXIT_CODE"
+        #else
+        #NAME_INFO="${{ env.NAME_INFO }}_NoMount$IS_X"
+        #echo "***WILD*** NAME_INFO=$NAME_INFO"
+        #echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
+        #fi
+
+    - name: HymoFS support
+      if: ${{ inputs.add_hymofs }}
+      #working-directory: ${{ env.KERNEL_ROOT }}/common
+      working-directory: ${{ github.workspace }}/kernel/common
+      run: |
+        echo "[💠] Apply HymoFS"
+        #########cd "$CONFIG/common" # cd $KERNEL_DIR 
+
+        # HymoFS One-Line Setup Script
+        # Usage: curl -LSs https://raw.githubusercontent.com/Anatdx/HymoFS/main/setup.sh | bash -s defconfig arch/arm64/configs/gki_defconfig with-susfs
+        if [ "${{ env.WITH_SUSFS }}" == "" ]; then 
+          curl -LSs https://raw.githubusercontent.com/Anatdx/HymoFS/main/setup.sh | bash -s defconfig arch/arm64/configs/gki_defconfig
+        else
+          curl -LSs https://raw.githubusercontent.com/Anatdx/HymoFS/main/setup.sh | bash -s defconfig arch/arm64/configs/gki_defconfig
+        fi
+        #curl -LSs "https://raw.githubusercontent.com/Anatdx/HymoFS/refs/heads/android12_5.10/patch/hymofs.patch" -o hymofs.patch
+        #patch -p1 --fuzz=3 < hymofs.patch
+        echo "[✅] Done HymoFS."
+
+    - name: NAME_INFO and Config
+      run: |
+        NAME_INFO="${{ env.NAME_INFO }}"
+        CONFIG_FILE="$GITHUB_WORKSPACE/wild_gki.fragment" # "${{ env.DEFCONFIG_FRAGMENT }}" # "$DEFCONFIG"
+
+        if [[ "${{ inputs.add_zeromount }}" == "true" ]]; then
+          NAME_INFO="${{ env.NAME_INFO }}_Zero"          
+          echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
+        fi
+        if [[ "${{ inputs.add_nomount }}" == "true" ]] || [[ "${{ inputs.add_nomountX }}" == "true" ]]; then
+          if [ "${{ inputs.add_nomountX }}" == "true" ]; then IS_X="X"; fi
+          NAME_INFO="${{ env.NAME_INFO }}_NoMount$IS_X"
+          echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
+        
+          echo "CONFIG_NOMOUNT=y" >> "$CONFIG_FILE"
+        fi
+        if [[ "${{ inputs.add_hymofs }}" == "true" ]]; then
+          NAME_INFO="${{ env.NAME_INFO }}_hymofs"
+          echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
+          
+          echo "CONFIG_HYMOFS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_REVERSE_LOOKUP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_FORWARD_REDIRECT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_HIDE_ENTRIES=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_INJECT_ENTRIES=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_STAT_SPOOF=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_XATTR_FILTER=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_UNAME_SPOOF=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_CMDLINE_SPOOF=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HYMOFS_DEBUG=y" >> "$CONFIG_FILE"
+        fi
+
+        #if [ "${{ inputs.bypass_unicode }}" == "true" ]; then NAME_INFO="${NAME_INFO}_uni"; fi
+        #if [ "${{ inputs.enable_susfs }}" == "true" ]; then NAME_INFO="${NAME_INFO}_uni"; fi
+        #if [ "${{ inputs.use_zram }}" == "true" ]; then NAME_INFO="${NAME_INFO}_zram"; fi
+        if [ "${{ env.WITH_BBG }}" == "y" ]; then NAME_INFO="${NAME_INFO}_bbg"; fi
+        #if [ "${{ inputs.use_kpm }}" == "true" ]; then NAME_INFO="${NAME_INFO}_kpm"; fi
+        #if [ "${{ inputs.enable_tmpfs }}" == "true" ]; then NAME_INFO="${NAME_INFO}_tmpfs"; fi
+        NAME_INFO="${NAME_INFO}_tmpfs"
+        if [ "${{ env.WITH_SUSFS }}" == "y" ]; then NAME_INFO="${NAME_INFO}_susfs"; fi
+        if [ "${{ inputs.add_bypass }}" == "true" ]; then NAME_INFO="-Bypass${NAME_INFO}"; fi
+        echo "WILD NAME_INFO=$NAME_INFO"
+        echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
+        
+        echo "***WILD*** NAME_INFO=$NAME_INFO"
+
     - name: Setup Baseband Guard
       if: contains(inputs.feature_set, 'BBG')
       uses: ./.github/actions/bbg
@@ -320,8 +481,12 @@ jobs:
       run: |
         set -ex
         #make -C common mrproper
-        if [ -f "build/build.sh" ]; then
-          SKIP_MRPROPER=1 GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh || exit 1
+        if [ -f "build/build.sh" ]; then          
+          if [[ "${{ inputs.skip_proper }}" == "true" ]] then
+            SKIP_MRPROPER=1 GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh || exit 1
+          else
+            GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh || exit 1
+          fi
         else
           # Copy fragment to kernel tree for bazel
           cp "$GITHUB_WORKSPACE/wild_gki.fragment" common/arch/arm64/configs/wild_gki.fragment
@@ -397,7 +562,7 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ steps.extract.outputs.file_name }}-AnyKernel3
+        name: ${{ steps.extract.outputs.file_name }}${{ env.NAME_INFO }}-AnyKernel3
         path: ${{ github.workspace }}/AnyKernel3/**
         if-no-files-found: ignore
         compression-level: 9
