@@ -27,6 +27,30 @@ on:
         description: "Feature Set"
         required: false
         type: string
+      add_bypass:
+        required: false
+        type: boolean
+        default: false
+      add_zeromount:
+        required: false
+        type: boolean
+        default: false
+      add_nomount:
+        required: false
+        type: boolean
+        default: false
+      add_nomountX:
+        required: false
+        type: boolean
+        default: false
+      add_hymofs:
+        required: false
+        type: boolean
+        default: false
+      skip_proper:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   generate-matrix:
@@ -75,4 +99,10 @@ jobs:
       patches_commit: ${{ inputs.patches_commit }}
       susfs_commit: ${{ inputs.susfs_commit }}
       feature_set: ${{ inputs.feature_set }}
+      add_bypass: ${{ inputs.add_bypass }}
+      add_zeromount: ${{ inputs.add_zeromount }}
+      add_nomount: ${{ inputs.add_nomount }}
+      add_nomountX: ${{ inputs.add_nomountX }}
+      add_hymofs: ${{ inputs.add_hymofs }}
+      skip_proper: ${{ inputs.skip_proper }}
     secrets: inherit
