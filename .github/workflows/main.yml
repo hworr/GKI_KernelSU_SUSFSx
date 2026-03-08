@@ -28,7 +28,7 @@ on:
           - custom
           - testing
           - bypass
-        default: custom
+        default: a12-5-10
       feature_set:
         description: "Feature Set"
         type: choice
@@ -44,6 +44,36 @@ on:
         type: string
         default: ""
         required: false
+      add_bypass:
+        description: 'Bypass'
+        required: false
+        type: boolean
+        default: false
+      add_zeromount:
+        description: 'Add ZERoMount support (feature)'
+        required: false
+        type: boolean
+        default: false
+      add_nomount:
+        description: 'Add NoMount support'
+        required: false
+        type: boolean
+        default: false
+      add_nomountX:
+        description: 'Add NoMount support (saved/old)'
+        required: false
+        type: boolean
+        default: false
+      add_hymofs:
+        description: 'Enable support for HymoFS'
+        required: false
+        type: boolean
+        default: false
+      skip_proper:
+        description: 'Skip mrproper'
+        required: false
+        type: boolean
+        default: false
   push:
     branches:
       - main
@@ -76,6 +106,12 @@ jobs:
       patches_commit: ${{ needs.fetch-commits.outputs.patches_commit }}
       susfs_commit: ${{ needs.fetch-commits.outputs.susfs_commit }}
       feature_set: ${{ inputs.feature_set || 'WKSU+SUSFS+BBG' }}
+      add_bypass: ${{ inputs.add_bypass }}
+      add_zeromount: ${{ inputs.add_zeromount }}
+      add_nomount: ${{ inputs.add_nomount }}
+      add_nomountX: ${{ inputs.add_nomountX }}
+      add_hymofs: ${{ inputs.add_hymofs }}
+      skip_proper: ${{ inputs.skip_proper }}
     secrets: inherit
 
   build-a13-5-10:
