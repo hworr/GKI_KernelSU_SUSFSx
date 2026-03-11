@@ -275,7 +275,7 @@ jobs:
         if [ "${{ inputs.add_nomountX }}" == "true" ]; then
           IS_X="X"
           echo "  <> saved/old patch"
-          cp "$GITHUB_WORKSPACE/patches/nomount/$NOMOUNT_PATCH" nomount.patch
+          curl -LSs "https://raw.githubusercontent.com/UserXP-web/kernel_build/refs/heads/main/patches/nomount/$NOMOUNT_PATCH" -o nomount.patch
         else
           IS_X=""
           if [ "${{ env.WITH_SUSFS }}" == "" ]; then
@@ -284,7 +284,7 @@ jobs:
             curl -LSs "https://raw.githubusercontent.com/maxsteeel/nomount/refs/heads/$MASTER_EXP/patches/$NOMOUNT_PATCH" -o nomount.patch
           else
             echo "  <> LIVE/latest patch (WITH EDITS by UserXP...)"
-            cp "$GITHUB_WORKSPACE/patches/nomount/edit/$NOMOUNT_PATCH" nomount.patch
+            curl -LSs "https://raw.githubusercontent.com/UserXP-web/kernel_build/refs/heads/main/patches/nomount/edit/$NOMOUNT_PATCH" -o nomount.patch
           fi
         fi
         chmod 777 nomount.patch
