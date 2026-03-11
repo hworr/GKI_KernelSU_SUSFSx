@@ -266,10 +266,10 @@ jobs:
         echo "=== NoMount patch ==="
         ###########cd "$KERNEL_ROOT/common" # cd "$CONFIG/common"
         if [ "${{ env.WITH_SUSFS }}" == "" ]; then
-          NOMOUNT_PATCH="nomount-kernel-${{ inputs.kernel_version }}.patch"
+          NOMOUNT_PATCH="nomount-kernel-$KERNEL_VERSION.patch"
           echo "  no susfs: $NOMOUNT_PATCH"
         else            
-          NOMOUNT_PATCH="nomount-susfs-kernel-${{ inputs.kernel_version }}.patch"
+          NOMOUNT_PATCH="nomount-susfs-kernel-$KERNEL_VERSION.patch"
           echo "  with susfs: $NOMOUNT_PATCH"
         fi
         if [ "${{ inputs.add_nomountX }}" == "true" ]; then
