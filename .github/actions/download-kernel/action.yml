@@ -12,7 +12,7 @@ inputs:
     description: 'OS patch level (e.g., 2024-01)'
     required: true
   custom:
-    required: true
+    required: false
     type: boolean
     default: false
   custom_name:
