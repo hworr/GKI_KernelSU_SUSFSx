@@ -75,6 +75,21 @@ on:
         required: false
         type: boolean
         default: false
+      custom:
+        description: "Custom kernel (AOSP)"
+        required: true
+        type: boolean
+        default: false
+      custom_name:
+        description: "Custom kernel (AOSP) name"
+        required: false
+        type: choice
+        options:
+          - "UserXP"
+          - "playground"
+          - "EvoX"
+          - "zylhdrXP"
+        default: "zylhdrXP"
   push:
     branches:
       - main
@@ -113,6 +128,8 @@ jobs:
       add_nomountX: ${{ inputs.add_nomountX }}
       add_hymofs: ${{ inputs.add_hymofs }}
       skip_proper: ${{ inputs.skip_proper }}
+      custom: ${{ inputs.custom }}
+      custom_name: ${{ inputs.custom_name }}
     secrets: inherit
 
   build-a13-5-10:
