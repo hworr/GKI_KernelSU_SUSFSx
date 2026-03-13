@@ -51,6 +51,14 @@ on:
         required: false
         type: boolean
         default: false
+      custom:
+        required: true
+        type: boolean
+        default: false
+      custom_name:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   generate-matrix:
@@ -105,4 +113,6 @@ jobs:
       add_nomountX: ${{ inputs.add_nomountX }}
       add_hymofs: ${{ inputs.add_hymofs }}
       skip_proper: ${{ inputs.skip_proper }}
+      custom: ${{ inputs.custom }}
+      custom_name: ${{ inputs.custom_name }}
     secrets: inherit
