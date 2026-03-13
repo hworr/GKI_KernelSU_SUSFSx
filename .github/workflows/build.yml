@@ -51,6 +51,14 @@ on:
         required: false
         type: boolean
         default: false
+      custom:
+        required: true
+        type: boolean
+        default: false
+      custom_name:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build-gki:
@@ -154,6 +162,8 @@ jobs:
         android_version: ${{ steps.parse.outputs.android_version }}
         kernel_version: ${{ steps.parse.outputs.kernel_version }}
         os_patch_level: ${{ steps.parse.outputs.os_patch_level }}
+        custom: ${{ inputs.custom }}
+        custom_name: ${{ inputs.custom_name }}
 
     - name: Extract Sublevel and Set File Name
       id: extract
