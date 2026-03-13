@@ -11,6 +11,14 @@ inputs:
   os_patch_level:
     description: 'OS patch level (e.g., 2024-01)'
     required: true
+  custom:
+    required: true
+    type: boolean
+    default: false
+  custom_name:
+    required: false
+    type: string
+    default: ""
 
 outputs:
   deprecated_branch:
@@ -25,10 +33,19 @@ runs:
       shell: bash
       working-directory: ${{ github.workspace }}/kernel
       run: |
-        FORMATTED_BRANCH="${{ inputs.android_version }}-${{ inputs.kernel_version }}-${{ inputs.os_patch_level }}"
-
+        #FORMATTED_BRANCH="${{ inputs.android_version }}-${{ inputs.kernel_version }}-${{ inputs.os_patch_level }}"
+        if [ ${{ inputs.custom }} ]; then
+          MANIFEST_URL="https://github.com/UserXP-web/kernel_build"
+          FORMATTED_BRANCH="main"
+          MANIFEST_PATH_NAME="manifest/${{ inputs.custom_name }}.xml"
+        else
+          MANIFEST_URL="https://android.googlesource.com/kernel/manifest"
+          FORMATTED_BRANCH="common-${{ inputs.android_version }}-${{ inputs.kernel_version }}-${{ inputs.os_patch_level }}"
+          MANIFEST_PATH_NAME="default.xml"
+        fi
+          
         # Initialize repo with the target branch
-        repo init -u https://android.googlesource.com/kernel/manifest -b common-${FORMATTED_BRANCH} --depth=1
+        repo init -u ${MANIFEST_URL} -b ${FORMATTED_BRANCH} -m ${MANIFEST_PATH_NAME} --depth=1
 
         # Check if branch is deprecated
         REMOTE_BRANCH=$(git ls-remote https://android.googlesource.com/kernel/common ${FORMATTED_BRANCH})
@@ -45,3 +62,10 @@ runs:
         
         # Sync kernel source
         repo --trace sync -c -j$(nproc --all) --fail-fast --no-tags --force-sync --no-clone-bundle
+
+    - name: CORRECT stupid
+      shell: bash
+      if: false # inputs.custom
+      run: |
+        SUB_DIR="common" # sm7435
+        curl -LSs "https://raw.githubusercontent.com/UserXP-web/kernel_build/refs/heads/main/correct/bootconfig.c" -o ./$CONFIG/$SUB_DIR/fs/proc/bootconfig.c
