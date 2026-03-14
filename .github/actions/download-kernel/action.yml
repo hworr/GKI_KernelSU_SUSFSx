@@ -37,7 +37,7 @@ runs:
         git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-gnu-6.4.1.git gcc
 
         #FORMATTED_BRANCH="${{ inputs.android_version }}-${{ inputs.kernel_version }}-${{ inputs.os_patch_level }}"
-        if [ ${{ inputs.custom }} ]; then
+        if ${{ inputs.custom }}; then
           MANIFEST_URL="https://github.com/UserXP-web/kernel_build"
           FORMATTED_BRANCH="main"
           MANIFEST_PATH_NAME="manifest/${{ inputs.custom_name }}.xml"
