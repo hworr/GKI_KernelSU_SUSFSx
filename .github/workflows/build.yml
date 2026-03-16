@@ -558,8 +558,10 @@ jobs:
         #make -C common mrproper
         if [ -f "build/build.sh" ]; then
           if [[ "${{ inputs.custom }}" == "true" ]]; then
-            echo "=== Update modules list ==="
-            cp "$GITHUB_WORKSPACE/kernel/out/$ANDROID_VERSION-$KERNEL_VERSION/common/modules.order" "$GITHUB_WORKSPACE/kernel/common/android/gki_aarch64_modules" || echo "WHAT!!!"
+            B_CONFIG=common/build.config.gki.aarch64
+            sed -i 's/BUILD_SYSTEM_DLKM=1/BUILD_SYSTEM_DLKM=0/' ./$B_CONFIG
+            sed -i '\#MODULES_ORDER=android/gki_aarch64_modules#d' ./$B_CONFIG
+            sed -i '/KMI_SYMBOL_LIST_STRICT_MODE/d' ./$B_CONFIG
           fi
           if [[ "${{ inputs.skip_proper }}" == "true" ]] then
             SKIP_MRPROPER=1 GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh || exit 1
