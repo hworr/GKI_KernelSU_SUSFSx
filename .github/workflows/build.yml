@@ -337,22 +337,22 @@ jobs:
         CONFIG_FILE="$GITHUB_WORKSPACE/wild_gki.fragment" # "${{ env.DEFCONFIG_FRAGMENT }}" # "$DEFCONFIG"
 
         if [[ "${{ inputs.custom }}" == "true" ]]; then
-          NAME_INFO="${NAME_INFO}_${{ inputs.custom_name }}"             
+          NAME_INFO="${NAME_INFO}_${{ inputs.custom_name }}"
           echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
         fi
         if [[ "${{ inputs.add_zeromount }}" == "true" ]]; then
-          NAME_INFO="${{ env.NAME_INFO }}_Zero"          
+          NAME_INFO="${NAME_INFO}_Zero"          
           echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
         fi
         if [[ "${{ inputs.add_nomount }}" == "true" ]] || [[ "${{ inputs.add_nomountX }}" == "true" ]]; then
           if [ "${{ inputs.add_nomountX }}" == "true" ]; then IS_X="X"; fi
-          NAME_INFO="${{ env.NAME_INFO }}_NoMount$IS_X"
+          NAME_INFO="${NAME_INFO}_NoMount$IS_X"
           echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
         
           echo "CONFIG_NOMOUNT=y" >> "$CONFIG_FILE"
         fi
         if [[ "${{ inputs.add_hymofs }}" == "true" ]]; then
-          NAME_INFO="${{ env.NAME_INFO }}_hymofs"
+          NAME_INFO="${NAME_INFO}_hymofs"
           echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
           
           #echo "CONFIG_HYMOFS=y" >> "$CONFIG_FILE"
