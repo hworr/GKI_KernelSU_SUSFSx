@@ -397,7 +397,6 @@ jobs:
 
         cd "kernel/prebuilts-master/clang/host/linux-x86" ################# android kernel
         clangVersion="r584948b" # r383902 r416183b r584948b
-        clang_PATH="clang-$clangVersion"
         androidVersion="" # 12 or [empty]
         if [ "${clangVersion}" == "r383902" ]; then androidVersion='12'; fi        
         echo "============================================================================================="
@@ -407,6 +406,7 @@ jobs:
           url2="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android${androidVersion}-release/clang-${clangVersion}.tar.gz"
         fi
         echo "Downloading... $url2"
+        clang_PATH="clang-r563880b" # clang_PATH="clang-$clangVersion" # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<=======================================================
         mkdir -p $clang_PATH &&
         aria2c -s16 -x16 -k1M $url2 -o clang.zip &&
         tar -xf clang.zip -C $clang_PATH &&
