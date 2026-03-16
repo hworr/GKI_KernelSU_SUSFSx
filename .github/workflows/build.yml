@@ -384,6 +384,10 @@ jobs:
         SUB_DIR="kernel/common" # sm7435
         curl -LSs "https://raw.githubusercontent.com/UserXP-web/kernel_build/refs/heads/main/correct/bootconfig.c" -o ./$SUB_DIR/fs/proc/bootconfig.c
 
+        # Remove check_defconfig
+        #sed -i 's|^POST_DEFCONFIG_CMDS=.*|POST_DEFCONFIG_CMDS=""|' "$GITHUB_WORKSPACE/$SUB_DIR/build.config.gki"
+        sed -i 's/check_defconfig//' ./$SUB_DIR/build.config.gki
+        
     - name: 📝 clang...
       if: inputs.custom
       run: |
