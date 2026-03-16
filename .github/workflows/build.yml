@@ -336,6 +336,10 @@ jobs:
         NAME_INFO="${{ env.NAME_INFO }}"
         CONFIG_FILE="$GITHUB_WORKSPACE/wild_gki.fragment" # "${{ env.DEFCONFIG_FRAGMENT }}" # "$DEFCONFIG"
 
+        if [[ "${{ inputs.custom }}" == "true" ]]; then
+          NAME_INFO="${NAME_INFO}_${{ inputs.custom_name }}"             
+          echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
+        fi
         if [[ "${{ inputs.add_zeromount }}" == "true" ]]; then
           NAME_INFO="${{ env.NAME_INFO }}_Zero"          
           echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
@@ -387,6 +391,9 @@ jobs:
         # Remove check_defconfig
         #sed -i 's|^POST_DEFCONFIG_CMDS=.*|POST_DEFCONFIG_CMDS=""|' "$GITHUB_WORKSPACE/$SUB_DIR/build.config.gki"
         sed -i 's/check_defconfig//' ./$SUB_DIR/build.config.gki
+
+        # Update modules list
+        cp "$GITHUB_WORKSPACE/kernel/out/$ANDROID_VERSION-$KERNEL_VERSION/common/modules.order" ./$SUB_DIR/android/gki_aarch64_modules
         
     - name: 📝 clang...
       if: inputs.custom
