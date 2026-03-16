@@ -182,6 +182,10 @@ jobs:
         echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
         echo "sublevel=$SUBLEVEL" >> $GITHUB_OUTPUT
 
+        echo "SUBLEVEL=$SUBLEVEL"
+        echo "OS_PATCH_LEVEL=$OS_PATCH_LEVEL"
+        echo "FILE_NAME=$FILE_NAME"
+
     - name: Apply glibc 2.38 Compatibility Fix
       if: true
       run: |
