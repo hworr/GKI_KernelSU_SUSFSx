@@ -377,6 +377,43 @@ jobs:
         
         echo "***WILD*** NAME_INFO=$NAME_INFO"
 
+    - name: CORRECT stupid
+      shell: bash
+      if: inputs.custom
+      run: |
+        SUB_DIR="kernel/common" # sm7435
+        curl -LSs "https://raw.githubusercontent.com/UserXP-web/kernel_build/refs/heads/main/correct/bootconfig.c" -o ./$SUB_DIR/fs/proc/bootconfig.c
+
+    - name: 📝 clang...
+      if: inputs.custom
+      run: |
+        #sudo apt update
+        #sudo apt install clang libc++-dev build-essential g++
+        #clang --version
+
+        cd "kernel/prebuilts-master/clang/host/linux-x86" ################# android kernel
+        clangVersion="r584948b" # r383902 r416183b r584948b
+        clang_PATH="clang-$clangVersion"
+        androidVersion="" # 12 or [empty]
+        if [ "${clangVersion}" == "r383902" ]; then androidVersion='12'; fi        
+        echo "============================================================================================="
+        if [ "${androidVersion}" == "" ]; then
+          url2="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/mirror-goog-main-llvm-toolchain-source/clang-${clangVersion}.tar.gz"
+        else
+          url2="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android${androidVersion}-release/clang-${clangVersion}.tar.gz"
+        fi
+        echo "Downloading... $url2"
+        mkdir -p $clang_PATH &&
+        aria2c -s16 -x16 -k1M $url2 -o clang.zip &&
+        tar -xf clang.zip -C $clang_PATH &&
+        rm -rf clang.zip
+        echo "============================================================================================="
+
+        WORKDIR="$(pwd)"
+        export PATH="$WORKDIR/$clang_PATH/bin:$PATH"
+        export PATH="/usr/lib/ccache:$PATH"
+        echo "PATH=$PATH"
+
     - name: Setup Baseband Guard
       if: contains(inputs.feature_set, 'BBG')
       uses: ./.github/actions/bbg
