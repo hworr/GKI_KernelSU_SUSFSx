@@ -392,9 +392,6 @@ jobs:
         #sed -i 's|^POST_DEFCONFIG_CMDS=.*|POST_DEFCONFIG_CMDS=""|' "$GITHUB_WORKSPACE/$SUB_DIR/build.config.gki"
         sed -i 's/check_defconfig//' ./$SUB_DIR/build.config.gki
 
-        # Update modules list
-        cp "$GITHUB_WORKSPACE/kernel/out/$ANDROID_VERSION-$KERNEL_VERSION/common/modules.order" ./$SUB_DIR/android/gki_aarch64_modules
-        
     - name: 📝 clang...
       if: inputs.custom
       run: |
@@ -559,7 +556,12 @@ jobs:
       run: |
         set -ex
         #make -C common mrproper
-        if [ -f "build/build.sh" ]; then          
+        if [ -f "build/build.sh" ]; then
+          if [[ "${{ inputs.custom }}" == "true" ]]; then
+            SUB_DIR="kernel/common"
+            echo "=== Update modules list ==="
+            cp "$GITHUB_WORKSPACE/kernel/out/$ANDROID_VERSION-$KERNEL_VERSION/common/modules.order" ./$SUB_DIR/android/gki_aarch64_modules
+          fi
           if [[ "${{ inputs.skip_proper }}" == "true" ]] then
             SKIP_MRPROPER=1 GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh || exit 1
           else
