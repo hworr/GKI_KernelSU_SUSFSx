@@ -252,25 +252,28 @@ jobs:
       if: inputs.add_zeromount && contains(inputs.feature_set, 'SUSFS')
       working-directory: ${{ github.workspace }}/kernel/common
       run: |
-        BRANCH="feature/patch-restructure" # main
-        #echo "==> Apply Upstream SUSFS Patch"
-        #PATCHNAME=50_add_susfs_in_gki-$ANDROID_VERSION-$KERNEL_VERSION.patch
-        #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
-        #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
-        #echo "==> Apply Enhanced SUSFS Patch"
-        #PATCHNAME=51_enhanced_susfs-$ANDROID_VERSION-$KERNEL_VERSION.patch
-        #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
-        #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"        
-        #echo "==> Apply KSU Safety Patch..."
-        #cd ../Wild_KSU
-        #PATCHNAME=70_ksu_safety-wksu-$KERNEL_VERSION.patch
-        #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
-        #[ -s "$PATCHNAME" ] && patch -p1 --no-backup-if-mismatch < "$PATCHNAME" || echo "No 70_ patch needed"
-        #cd ../common
+          BRANCH="main" # main feature/patch-restructure
+          #ANDROID_VERSION=${{ inputs.android_version }}
+          #KERNEL_VERSION=${{ inputs.kernel_version }}
+          KERNEL_VARIANT=WildKSU
+          #echo "==> Apply Upstream SUSFS Patch"
+          #PATCHNAME=50_add_susfs_in_gki-$ANDROID_VERSION-$KERNEL_VERSION.patch
+          #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
+          #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
+          #echo "==> Apply Enhanced SUSFS Patch"
+          #PATCHNAME=51_enhanced_susfs-$ANDROID_VERSION-$KERNEL_VERSION.patch
+          #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
+          #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"        
+          #echo "==> Apply KSU Safety Patch..."
+          #cd ../Wild_KSU
+          #PATCHNAME=70_ksu_safety-wksu-$KERNEL_VERSION.patch
+          #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
+          #[ -s "$PATCHNAME" ] && patch -p1 --no-backup-if-mismatch < "$PATCHNAME" || echo "No 70_ patch needed"
+          #cd ../common
 
-        PATCHNAME=60_zeromount-$ANDROID_VERSION-$KERNEL_VERSION.patch        
-        curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/WildKSU/patches/$PATCHNAME" -o $PATCHNAME
-        patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
+          PATCHNAME=60_zeromount-$ANDROID_VERSION-$KERNEL_VERSION.patch          
+          curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
+          patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
     - name: NoMount
       if: inputs.add_nomount || inputs.add_nomountX
       #working-directory: ${{ env.KERNEL_ROOT }}/common
