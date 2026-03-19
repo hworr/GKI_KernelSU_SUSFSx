@@ -46,4 +46,7 @@ runs:
         fi
 
         # Set build timestamp
-        export KBUILD_BUILD_TIMESTAMP="$(date -u '+%a %b %e %H:%M:%S UTC %Y')"
+        #export KBUILD_BUILD_TIMESTAMP="$(date -u '+%a %b %e %H:%M:%S UTC %Y')"
+        #export KBUILD_BUILD_TIMESTAMP="Sun Dec 13 14:41:30 2020 -0800"
+        export KBUILD_BUILD_TIMESTAMP="Thu Jan 1 00:00:00 UTC 1970"
+        
