@@ -383,9 +383,9 @@ jobs:
         NAME_INFO="${NAME_INFO}_tmpfs"
         if [ "${{ env.WITH_SUSFS }}" == "y" ]; then NAME_INFO="${NAME_INFO}_susfs"; fi
         if [ "${{ inputs.add_bypass }}" == "true" ]; then NAME_INFO="-Bypass${NAME_INFO}"; fi
-        echo "WILD NAME_INFO=$NAME_INFO"
-        echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
         
+        NAME_INFO="${NAME_INFO}_$(date +'%d.%m.%y')"
+        echo "NAME_INFO=$NAME_INFO" >> $GITHUB_ENV
         echo "***WILD*** NAME_INFO=$NAME_INFO"
 
     - name: CORRECT stupid
