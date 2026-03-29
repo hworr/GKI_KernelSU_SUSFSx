@@ -49,6 +49,7 @@ runs:
           
         # Initialize repo with the target branch
         repo init -u ${MANIFEST_URL} -b ${FORMATTED_BRANCH} -m ${MANIFEST_PATH_NAME} --depth=1 --repo-rev=v2.16
+        repo sync -l
 
         # Check if branch is deprecated
         REMOTE_BRANCH=$(git ls-remote https://android.googlesource.com/kernel/common ${FORMATTED_BRANCH})
