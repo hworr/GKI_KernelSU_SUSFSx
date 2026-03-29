@@ -51,7 +51,7 @@ runs:
         #repo init -u ${MANIFEST_URL} -b ${FORMATTED_BRANCH} -m ${MANIFEST_PATH_NAME} --depth=1 --repo-rev=v2.16
         repo init -u ${MANIFEST_URL} -b ${FORMATTED_BRANCH} -m ${MANIFEST_PATH_NAME} --depth=1 --repo-rev=stable
         repo sync -n kernel/build
-        repo sync -n kernel/common
+        #repo sync -n kernel/common
         repo sync -l
 
         # Check if branch is deprecated
