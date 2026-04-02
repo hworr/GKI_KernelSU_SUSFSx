@@ -263,7 +263,7 @@ jobs:
           echo "==> Apply Enhanced SUSFS Patch"
           PATCHNAME=51_enhanced_susfs-$ANDROID_VERSION-$KERNEL_VERSION.patch
           curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
-          patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME" || echo "No 51_ patch FAiLeD!!!"
+          #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME" || echo "No 51_ patch FAiLeD!!!"
           #echo "==> Apply KSU Safety Patch..."
           #cd ../Wild_KSU
           #PATCHNAME=70_ksu_safety-wksu-$KERNEL_VERSION.patch
@@ -271,6 +271,7 @@ jobs:
           #[ -s "$PATCHNAME" ] && patch -p1 --no-backup-if-mismatch < "$PATCHNAME" || echo "No 70_ patch needed"
           #cd ../common
 
+          echo "==> Apply ZeroMount Patch"
           PATCHNAME=60_zeromount-$ANDROID_VERSION-$KERNEL_VERSION.patch          
           curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
           patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
