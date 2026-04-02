@@ -260,10 +260,10 @@ jobs:
           #PATCHNAME=50_add_susfs_in_gki-$ANDROID_VERSION-$KERNEL_VERSION.patch
           #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
           #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"
-          #echo "==> Apply Enhanced SUSFS Patch"
-          #PATCHNAME=51_enhanced_susfs-$ANDROID_VERSION-$KERNEL_VERSION.patch
-          #curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
-          #patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"        
+          echo "==> Apply Enhanced SUSFS Patch"
+          PATCHNAME=51_enhanced_susfs-$ANDROID_VERSION-$KERNEL_VERSION.patch
+          curl -LSs "https://raw.githubusercontent.com/Enginex0/Super-Builders/refs/heads/$BRANCH/$ANDROID_VERSION-$KERNEL_VERSION/$KERNEL_VARIANT/patches/$PATCHNAME" -o $PATCHNAME
+          patch -p1 -F3 --no-backup-if-mismatch < "$PATCHNAME"        
           #echo "==> Apply KSU Safety Patch..."
           #cd ../Wild_KSU
           #PATCHNAME=70_ksu_safety-wksu-$KERNEL_VERSION.patch
